@@ -21,9 +21,7 @@ public:
      * @param y y dimension of board
      * @param win window to draw on
      */
-    Board ( unsigned int x, unsigned int y, WINDOW* win )
-            : x_dim ( x ), y_dim ( y ), window ( win )
-    {}
+    Board ( unsigned int x, unsigned int y, WINDOW* win );
 
     /**
      * function to draw the actual board onto window
@@ -40,9 +38,19 @@ private:
     /** vector holding all information about the board */
     std::vector<std::vector<std::string>> board;
     /** variables which define the look of the board */
+    std::string fieldSeparate;
     std::string fieldFree;
     std::string fieldFail;
     std::string fieldSuccess;
+    unsigned int vSpace;
+
+    /**
+     * @brief template helper function to print a vector to a string
+     * @param vector the vector of type T to be printed
+     * @param separate the separation string
+     */
+    template <typename T>
+    std::string print_vector ( const std::vector<T>& vector, const std::string& separate ) const;
 };
 
 
