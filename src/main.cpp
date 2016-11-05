@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include "../inc/Board.h"
+#include "../inc/Game.h"
 
 int main ()
 {
@@ -10,18 +11,9 @@ int main ()
     cbreak();               // Line buffering disabled. pass on everything
     keypad(stdscr, TRUE);   // let ncurses interpret arrow keys
 
-    int ch;
-    Board b ( 10, 10, stdscr );
-    b.draw();
-    refresh();
-    //getch();
-
-    while ( ( ch = getch() ) != KEY_F(2) )
-    {
-        b.user_move_cursor( ch );
-        //std::cout << "you pressed " << ch << std::endl;
-    }
-    //printw("%s", "test");
+    Board* b = new Board ( 10, 10, stdscr );
+    Game g ( b );
+    g.run();
 
     endwin();   // end ncurses
 

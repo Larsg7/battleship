@@ -9,6 +9,7 @@
 
 class Error : public std::runtime_error
 {
+public:
     Error ( const std::string& exeception )
             : runtime_error( exeception ) {}
 };

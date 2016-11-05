@@ -1,7 +1,3 @@
-//
-// Created by lars on 11/4/16.
-//
-
 #ifndef BATTLESHIP_BOARD_H
 #define BATTLESHIP_BOARD_H
 
@@ -47,7 +43,26 @@ public:
      */
     void update ();
 
+    /**
+     * @brief function which returns the current position of the cursor
+     */
+    std::pair<int,int> get_cursor_pos () const;
 
+    std::pair<unsigned int, unsigned int> get_dim () const;
+
+    /**
+     * @brief function which sets a field on the board
+     * @param pos the position to set the field (local coords)
+     * @param type string stating of which type the field should be
+     * @return if the field was free
+     */
+    bool set_field ( const std::pair<int,int> pos, const std::string& type );
+
+    /**
+     * @brief function which returns the board vector
+     * @return board
+     */
+    std::vector<std::vector<std::string>> get_board () const;
 
 private:
     /** dimensions of the board (x,y) */

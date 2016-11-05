@@ -82,6 +82,67 @@ void Board::update ()
 }
 
 
+bool Board::set_field ( const std::pair<int, int> pos, const std::string& type )
+{
+    if ( pos.first  < 1 || pos.first  > dim.first
+      || pos.second < 1 || pos.second > dim.second )
+    {
+        throw Error ( "Position is not on board in Board::set_field!" );
+    }
+
+    if ( board[pos.second][pos.first] != fieldFree )
+    {
+        return false;
+    }
+
+    string replace;
+    if ( type == "FAIL" )
+    {
+        replace = fieldFail;
+    }
+    else if ( type == "SUCCESS" )
+    {
+        replace = fieldSuccess;
+    }
+    else
+    {
+        throw Error ( "Wrong replacement type in Board::set_field!" );
+    }
+    board[pos.second][pos.first] = replace;
+    return true;
+}
+
+
+std::pair<int,int> Board::get_cursor_pos () const
+{
+    return posCursor;
+}
+
+std::vector<std::vector<std::string>> Board::get_board () const
+{
+    return board;
+}
+
+std::pair<unsigned int, unsigned int> Board::get_dim () const
+{
+    return dim;
+}
+
+/**
+ * loop through board and check if you find a field which is still free
+ */
+bool Board::is_board_full ()
+{
+    for ( int row = 0; row < board.size(); ++row ) {
+        for ( int col = 0; col < board[row].size(); ++col ) {
+            if ( board[row][col] == fieldFree )
+                return false;
+        }
+    }
+    return true;
+}
+
+
 void Board::reset_cursor () const
 {
     // move the cursor to starting position
