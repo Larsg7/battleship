@@ -6,13 +6,14 @@
 #include <string>
 
 /**
- * class which is responsible for drawing the board
+ * class which is responsible for drawing the board and keeping
+ * track of the cursor position
  */
 class Board
 {
 public:
     /**
-     * constructor
+     * @brief constructor
      * @param x x dimension of board
      * @param y y dimension of board
      * @param win window to draw on
@@ -20,7 +21,7 @@ public:
     Board ( unsigned int x, unsigned int y, WINDOW* win );
 
     /**
-     * function to draw the actual board onto window
+     * @brief function to draw the actual board onto window
      */
     void draw () const;
 
@@ -32,21 +33,17 @@ public:
 
     /**
      * @brief move the cursor on the board (to allow the user to choose a field)
+     * @param key the value of the key pressed (see ncurses' docs)
      * @return if cursor was moved (if not at the edge)
      */
     bool user_move_cursor ( const int key ) const;
 
     /**
-    * @brief resets cursor to starting position
+    * @brief resets cursor to posCursor (especially after drawing)
     */
     void reset_cursor () const;
 
-    /**
-     * @brief function which returns the current position of the cursor
-     */
-    std::pair<int,int> get_cursor_pos () const;
-
-    std::pair<unsigned int, unsigned int> get_dim () const;
+    //// SETTERS ////
 
     /**
      * @brief function which sets a field on the board
@@ -56,11 +53,25 @@ public:
      */
     bool set_field ( const std::pair<int,int> pos, const std::string& type );
 
+    //// GETTERS ////
+
     /**
      * @brief function which returns the board vector
      * @return board
      */
     std::vector<std::vector<std::string>> get_board () const;
+
+    /**
+     * @brief function which returns the current position of the cursor
+     * @return posCursor
+     */
+    std::pair<int,int> get_cursor_pos () const;
+
+    /**
+     * @brief functions which returns the dimensions of the board
+     * @return dim
+     */
+    std::pair<int,int> get_dim () const;
 
 private:
     /** dimensions of the board (x,y) */
@@ -84,20 +95,19 @@ private:
     /** starting position of the cursor in local coords (x,y) */
     const std::pair<int,int> posCursorStart;
 
-    /** positon of the cursor now in local coords (x,y) */
+    /** positon of the cursor in local coords (x,y) */
     mutable std::pair<int,int> posCursor;
 
     /**
      * @brief helper function to move the cursor to a position in local coords
      *        (has all logic for different values of fieldSeparate)
-     * @return if movement was successful (it pos is on the board)
+     * @return if movement was successful (if pos is on the board)
      */
     bool move_local ( std::pair<int,int> pos ) const;
 
     /**
      * @brief this function does all updating which needs to be done between drawings
      *        like set boardStart according to terminal size
-     *        (might be a good option to make it be only called within draw())
      */
     void update () const;
 

@@ -10,6 +10,8 @@
 
 using namespace std;
 
+//// PUBLIC METHODS ////
+
 /**
  * constructs the object, initialise all variables which are important
  * for the look of the board and set the board to its initial state
@@ -69,20 +71,6 @@ void Board::draw () const
 }
 
 
-void Board::update () const
-{
-    // first get maximal dimensions of window
-    int maxX, maxY;
-    getmaxyx( window, maxY, maxX );
-
-    int sepLength = (int)fieldSeparate.length();
-
-    // starting pos (you need to add 1 to x/y_dim for the actual size of the board
-    bStartGlobal = make_pair( ( maxX - dim.first * ( sepLength + 1 ) - 1 ) / 2
-                          , ( maxY - dim.second - 1 ) / 2 );
-}
-
-
 bool Board::set_field ( const std::pair<int, int> pos, const std::string& type )
 {
     if ( pos.first  < 1 || pos.first  > dim.first
@@ -124,7 +112,7 @@ std::vector<std::vector<std::string>> Board::get_board () const
     return board;
 }
 
-std::pair<unsigned int, unsigned int> Board::get_dim () const
+std::pair<int, int> Board::get_dim () const
 {
     return dim;
 }
@@ -177,6 +165,7 @@ bool Board::user_move_cursor ( const int key ) const
     return move_local( newPos );
 }
 
+//// PRIVATE METHODS ////
 
 bool Board::move_local ( std::pair<int, int> pos ) const
 {
@@ -195,6 +184,21 @@ bool Board::move_local ( std::pair<int, int> pos ) const
         return true;
     }
 }
+
+
+void Board::update () const
+{
+    // first get maximal dimensions of window
+    int maxX, maxY;
+    getmaxyx( window, maxY, maxX );
+
+    int sepLength = (int)fieldSeparate.length();
+
+    // starting pos (you need to add 1 to x/y_dim for the actual size of the board
+    bStartGlobal = make_pair( ( maxX - dim.first * ( sepLength + 1 ) - 1 ) / 2
+            , ( maxY - dim.second - 1 ) / 2 );
+}
+
 
 /**
  * helper function

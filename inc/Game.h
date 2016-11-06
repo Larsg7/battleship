@@ -6,21 +6,29 @@
 #define BATTLESHIP_GAME_H
 
 #include "Board.h"
+#include "Ship.h"
 
 /*
  * what does it need:
- * a way to store ships
+ * a way to store shipsBoard
  * a run function to start the game -> draws board + refresh
  *                                     checks if user has won
  *                                     checks if user has hit ENTER - update board
  *
- * a way to randomize ships
+ * a way to randomize shipsBoard
  * a debug mode
  */
 
+/**
+ * class making the actual game run
+ */
 class Game
 {
 public:
+    /**
+     * @brief constructor
+     * @param b pointer to Board object
+     */
     Game ( Board* b );
 
     /**
@@ -29,8 +37,13 @@ public:
     void run ();
 
     /**
-     * randomize the ships positions
-     * @return bool of placement was successful
+     * @brief this function udates the score (shipsLeft) by comparing ships to the board
+     */
+    void update_score ();
+
+    /**
+     * @brief randomize the ships positions
+     * @return bool if placement was successful
      */
     bool randomize ();
 
@@ -39,12 +52,26 @@ public:
      * @return bool
      */
     bool has_user_won ();
+
 private:
+    /** pointer to the board being used */
     Board* mBoard;
-    std::vector<std::vector<int>> ships;
-    const int shipsTotal;
-    int shipsLeft;
-    const std::pair<int,int> dim;
+    /** dimensions of the board (x,y) */
+    const std::pair<unsigned int, unsigned int> dim;
+
+    /** vector-vector keeping track of position of ships */
+    std::vector<std::vector<int>> shipsBoard;
+    std::vector<Ship*> activeShips;
+
+    /** how many ships we have in total */
+    const unsigned int shipsTotal;
+
+    /**
+     * @brief function which determines if a shot was successful
+     * @param pos the position (local coords) where the user has shot to
+     * @return string "SUCCESS" if shot was successful, "FAIL" otherwise
+     */
+    std::string shoot ( const std::pair<int,int> pos ) const;
 };
 
 
