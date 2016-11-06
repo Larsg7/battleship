@@ -12,7 +12,7 @@ using namespace std;
 Game::Game ( Board* b )
     : mBoard ( b )
     , dim ( b->get_dim() )
-    , shipSizes { 2, 3 }        // each value correspond to one ship
+    , shipSizes { 2, 3 }        // each value corresponds to one ship
 {
     shipsBoard = vector<vector<int>> ( dim.second );
     for ( int row = 0; row < shipsBoard.size(); ++row ) {
