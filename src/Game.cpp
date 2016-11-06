@@ -15,7 +15,7 @@ using namespace std;
 Game::Game ( Board* b )
     : mBoard ( b )
     , dim ( b->get_dim() )
-    , shipSizes { 9, 9, 9 }        // each value corresponds to one ship
+    , shipSizes { 5, 4, 3, 2, 2, 1, 1 }        // each value corresponds to one ship
 {
     shipsBoard = vector<vector<int>> ( dim.second );
     for ( int row = 0; row < shipsBoard.size(); ++row ) {
@@ -95,9 +95,6 @@ bool Game::has_user_won ()
 
 bool Game::randomize ()
 {
-    // how many tries we have for each ship
-    int maxTries ( 20 );
-
     ships.clear();
 
     // randomize ship positions
@@ -112,59 +109,35 @@ bool Game::randomize ()
         // this vector will hold all ship positions
         vector<pair<int,int>> newPos;
 
+        // random starting position (+1 because rand()%dim. lies between 0 and dim.-1)
+        pair<int,int> startPos { rand() % dim.first + 1, rand() % dim.second + 1 };
+        pair<int,int> testPos = startPos;
+
         while ( ! shipPlaced )
         {
-            if ( tries > maxTries )
+            if ( testPos == startPos && tries != 0 )
             {
-                throw Error ( "Was not able to set ship " + to_string(size) + ", maxTries exceeded in Game::randomize!" );
+                throw Error ( "Was not able to set ship " + to_string(size) + ", got back to startPos in Game::randomize!" );
             }
 
-            // should it be horizontal or vertical?
-            bool vertical ( rand() % 2 == 0 );
-
-            // starting position to try (+1 because rand()%dim. lies between 0 and dim.-1)
-            // TODO: make searching algorithm starting at startPos until a valid field is found
-            pair<int,int> startPos;
-            if ( vertical )
-            {
-                startPos = make_pair( rand() % dim.first + 1, rand() % ( dim.second - size ) + size );
-            }
-            else
-            {
-                startPos = make_pair( rand() % ( dim.first - size ) + size, rand() % dim.second + 1 );
-            }
-
-            cout << "trying (" << startPos.first << "," << startPos.second << ")"
-                 << " to " << "(" << startPos.first << "," << startPos.second - size << ")"<< endl;
+            cout << "trying (" << testPos.first << "," << testPos.second << ")" << endl;
             //sleep( 1);
 
             // now lets check every tile which belongs to the ship
-            for ( int j = 0; j < size; ++j ) {
-                // pair holding the pos to check
-                pair<int,int> pos;
+            newPos = check_placement( testPos, size );
 
-                // we always go left or up
-                if ( vertical )
-                {
-                    pos = make_pair( startPos.first , startPos.second - j );
-                    if ( ! check_placement( pos ) )
-                    {
-                        break;
-                    }
-                }
-                else
-                {
-                    pos = make_pair( startPos.first - j, startPos.second );
-                    if ( ! check_placement( pos ) )
-                    {
-                        break;
-                    }
-                }
-                newPos.push_back( pos );
+            if ( testPos.first == dim.first )
+            {
+                testPos.first = 1;
+                testPos.second = testPos.second % dim.second + 1;
             }
-            tries++;
+            else
+            {
+                testPos.first++;
+            }
 
             shipPlaced = newPos.size() == size;
+            tries++;
         }
 
         newShip->set_pos( newPos );
@@ -207,10 +180,46 @@ std::string Game::shoot ( const std::pair<int, int> pos ) const
     }
 }
 
+vector<pair<int,int>> Game::check_placement ( pair<int, int> startPos, int size ) const
+{
+    // TODO: not all ships should be vertical
+    vector<pair<int,int>> newPos;
+    for ( int vertical = 0; vertical < 2; ++vertical )
+    {
+        newPos.clear();
+        for ( int j = 0; j < size; ++j )
+        {
+            // pair holding the pos to check
+            pair<int, int> pos;
+
+            // we always go left or up
+            if ( vertical == 1 )
+            {
+                pos = make_pair( startPos.first, startPos.second - j );
+                if ( ! check_position( pos ) )
+                {
+                    break;
+                }
+            }
+            else
+            {
+                pos = make_pair( startPos.first - j, startPos.second );
+                if ( ! check_position( pos ) )
+                {
+                    break;
+                }
+            }
+            newPos.push_back( pos );
+        }
+    }
+
+    return ( newPos.size() == size ) ? newPos : vector<pair<int,int>> ( 0 );
+}
+
 /**
  * @brief checks placement of ship
  */
-bool Game::check_placement ( std::pair<int, int> pos ) const
+bool Game::check_position ( std::pair<int, int> pos ) const
 {
     // first check if pos is on board (its allowed to be on the edge)
     if ( pos.first  < 1 || pos.first  > dim.first
@@ -224,12 +233,16 @@ bool Game::check_placement ( std::pair<int, int> pos ) const
     {
         for ( auto p : s->get_pos() )
         {
-            if ( pos.first      == p.first
-              //|| pos.first  + 1 == p.first
-              //|| pos.first  - 1 == p.first
-              || pos.second     == p.second)
-              //|| pos.second + 1 == p.second
-              //|| pos.second - 1 == p.second)
+            // TODO: make this nicer
+            if ( ( pos.first      == p.first && pos.second      == p.second )
+              || ( pos.first  + 1 == p.first && pos.second  + 1 == p.second )
+              || ( pos.first  - 1 == p.first && pos.second  - 1 == p.second )
+              || ( pos.first  + 1 == p.first && pos.second  - 1 == p.second )
+              || ( pos.first  - 1 == p.first && pos.second  + 1 == p.second )
+              || ( pos.first  + 1 == p.first && pos.second      == p.second )
+              || ( pos.first      == p.first && pos.second  + 1 == p.second )
+              || ( pos.first  - 1 == p.first && pos.second      == p.second )
+              || ( pos.first      == p.first && pos.second  - 1 == p.second ))
             {
                 return false;
             }

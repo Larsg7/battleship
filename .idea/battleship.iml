@@ -3,12 +3,15 @@
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src/Game.cpp" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/inc/Screen.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/Ship.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/Board.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/Screen.cpp" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/inc/Board.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/inc/Ship.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/inc/Screen.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/inc/Game.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/inc/Error.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/inc/Board.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/CMakeLists.txt" isTestSource="false" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />

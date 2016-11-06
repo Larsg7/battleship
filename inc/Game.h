@@ -86,7 +86,9 @@ private:
      * @param pos the pos to be checkesd (local coords)
      * @return if pos is valid
      */
-    bool check_placement ( std::pair<int,int> pos ) const;
+    bool check_position ( std::pair<int, int> pos ) const;
+
+    std::vector<std::pair<int,int>> check_placement ( std::pair<int, int> startPos, int size ) const;
 };
 
 
