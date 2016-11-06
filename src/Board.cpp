@@ -20,6 +20,7 @@ Board::Board ( unsigned int x, unsigned int y, WINDOW* win )
     , board ( dim.second ) // y_dim is the # of cols, so the vectors in *board* represent the rows
     , vSpace    ( 1 )
     , posCursorStart ( 1, 1 ) // this is now in local coords of the board
+    , posCursor ( posCursorStart )
 {
     // set some cosmetics
     fieldSeparate = "  ";  // horizontal separation of fields
@@ -38,8 +39,6 @@ Board::Board ( unsigned int x, unsigned int y, WINDOW* win )
             board[row][col] = fieldFree;
         }
     }
-
-    update();
 }
 
 /**
@@ -47,6 +46,8 @@ Board::Board ( unsigned int x, unsigned int y, WINDOW* win )
  */
 void Board::draw () const
 {
+    update();
+
     // draw the first line with numbers
     // TODO: after 10 we need less space between numbers
     vector<string> firstLine ( dim.first + 1 );
@@ -68,7 +69,7 @@ void Board::draw () const
 }
 
 
-void Board::update ()
+void Board::update () const
 {
     // first get maximal dimensions of window
     int maxX, maxY;
@@ -90,7 +91,7 @@ bool Board::set_field ( const std::pair<int, int> pos, const std::string& type )
         throw Error ( "Position is not on board in Board::set_field!" );
     }
 
-    if ( board[pos.second][pos.first] != fieldFree )
+    if ( board[pos.second - 1][pos.first - 1] != fieldFree )
     {
         return false;
     }
@@ -108,7 +109,7 @@ bool Board::set_field ( const std::pair<int, int> pos, const std::string& type )
     {
         throw Error ( "Wrong replacement type in Board::set_field!" );
     }
-    board[pos.second][pos.first] = replace;
+    board[pos.second - 1][pos.first - 1] = replace;
     return true;
 }
 
@@ -146,8 +147,7 @@ bool Board::is_board_full ()
 void Board::reset_cursor () const
 {
     // move the cursor to starting position
-    move_local( posCursorStart );
-    posCursor = posCursorStart;
+    move_local( posCursor );
 }
 
 

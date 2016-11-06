@@ -4,6 +4,8 @@
 
 #include "../inc/Game.h"
 
+#define MY_KEY_ENTER 10
+
 using namespace std;
 
 Game::Game ( Board* b )
@@ -25,17 +27,26 @@ void Game::run ()
 
     int ch ( 0 );
 
-    do
-    {
-        mBoard->update();
-        mBoard->draw();
-        refresh();
-        while ( ( ch = getch() ) != KEY_F(2) )
-        {
-            mBoard->user_move_cursor( ch );
-        }
+    mBoard->draw();
+    refresh();
+    mBoard->reset_cursor();
 
-    } while ( ( ch = getch() ) != KEY_F(2) );
+    while ( ( ch =getch() ) )
+    {
+        switch ( ch )
+        {
+            case KEY_F(2):
+                return;
+            case MY_KEY_ENTER:
+                mBoard->set_field( mBoard->get_cursor_pos(), "FAIL" );
+                mBoard->draw();
+                refresh();
+                break;
+            default:
+                //printw( "%i", ch );
+                mBoard->user_move_cursor( ch );
+        }
+    }
 }
 
 

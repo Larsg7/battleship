@@ -37,11 +37,9 @@ public:
     bool user_move_cursor ( const int key ) const;
 
     /**
-     * @brief this function does all updating which needs to be done between drawings
-     *        like set boardStart according to terminal size
-     *        (might be a good option to make it be only called within draw())
-     */
-    void update ();
+    * @brief resets cursor to starting position
+    */
+    void reset_cursor () const;
 
     /**
      * @brief function which returns the current position of the cursor
@@ -68,7 +66,7 @@ private:
     /** dimensions of the board (x,y) */
     const std::pair<unsigned int, unsigned int> dim;
     /** starting pos of the board in global coords */
-    std::pair<int, int> bStartGlobal;
+    mutable std::pair<int, int> bStartGlobal;
 
     /** window to draw on */
     WINDOW* window;
@@ -97,9 +95,11 @@ private:
     bool move_local ( std::pair<int,int> pos ) const;
 
     /**
-     * @brief resets cursor to starting position
+     * @brief this function does all updating which needs to be done between drawings
+     *        like set boardStart according to terminal size
+     *        (might be a good option to make it be only called within draw())
      */
-    void reset_cursor () const;
+    void update () const;
 
     /**
      * @brief template helper function to print a vector to a string
