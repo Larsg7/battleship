@@ -11,11 +11,9 @@
 class Ship
 {
 public:
-    Ship ( unsigned int size );
-
     void set_pos ( std::vector<std::pair<int,int>> pos );
 
-    void die ();
+    void hit ( std::pair<int,int> pos );
 
     bool is_dead () const;
 
@@ -23,8 +21,8 @@ public:
 
 private:
     std::vector<std::pair<int,int>> shipPos;
-    const unsigned int shipSize;
-    bool isDead;
+    std::vector<std::pair<int,int>> damage;
+    int hitsLeft;
 };
 
 

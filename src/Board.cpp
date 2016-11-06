@@ -101,6 +101,11 @@ bool Board::set_field ( const std::pair<int, int> pos, const std::string& type )
     return true;
 }
 
+void Board::set_board ( std::vector<std::vector<std::string>>& b )
+{
+    board = b;
+}
+
 
 std::pair<int,int> Board::get_cursor_pos () const
 {
@@ -115,6 +120,10 @@ std::vector<std::vector<std::string>> Board::get_board () const
 std::pair<int, int> Board::get_dim () const
 {
     return dim;
+}
+
+WINDOW* Board::get_window () const {
+    return window;
 }
 
 /**

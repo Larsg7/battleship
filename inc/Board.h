@@ -53,6 +53,8 @@ public:
      */
     bool set_field ( const std::pair<int,int> pos, const std::string& type );
 
+    void set_board ( std::vector<std::vector<std::string>>& b );
+
     //// GETTERS ////
 
     /**
@@ -72,6 +74,8 @@ public:
      * @return dim
      */
     std::pair<int,int> get_dim () const;
+
+    WINDOW* get_window () const;
 
 private:
     /** dimensions of the board (x,y) */

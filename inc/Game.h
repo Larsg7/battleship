@@ -59,12 +59,12 @@ private:
     /** dimensions of the board (x,y) */
     const std::pair<unsigned int, unsigned int> dim;
 
+    /** information about ships in game (just sizes) */
+    std::vector<unsigned int> shipSizes;
     /** vector-vector keeping track of position of ships */
     std::vector<std::vector<int>> shipsBoard;
-    std::vector<Ship*> activeShips;
-
-    /** how many ships we have in total */
-    const unsigned int shipsTotal;
+    /** vector holding the active ships pointer */
+    std::vector<Ship*> ships;
 
     /**
      * @brief function which determines if a shot was successful
@@ -72,6 +72,8 @@ private:
      * @return string "SUCCESS" if shot was successful, "FAIL" otherwise
      */
     std::string shoot ( const std::pair<int,int> pos ) const;
+
+    void show_debug () const;
 };
 
 
