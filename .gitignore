@@ -1,4 +1,9 @@
 build
 *.out
 *.o
-.idea
+.idea/
+inc/Board.h.gch
+inc/Error.h.gch
+inc/Game.h.gch
+inc/Screen.h.gch
+inc/Ship.h.gch

@@ -73,7 +73,20 @@ private:
      */
     std::string shoot ( const std::pair<int,int> pos ) const;
 
+    /**
+     * show debug information (for now only the ships location)
+     */
     void show_debug () const;
+
+    /**
+     * @brief check if a postion is valid for a new ship.
+     *        That means: a) the pos is on the board
+     *                    b) the pos is free (there is no ship there)
+     *                    c) there is no ship within one tile
+     * @param pos the pos to be checkesd (local coords)
+     * @return if pos is valid
+     */
+    bool check_placement ( std::pair<int,int> pos ) const;
 };
 
 

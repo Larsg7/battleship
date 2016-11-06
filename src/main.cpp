@@ -10,7 +10,7 @@ int main ()
     initscr();              // Initialise ncurses
     noecho();               // Don't echo input
     cbreak();               // Line buffering disabled. pass on everything
-    keypad(stdscr, TRUE);   // let ncurses interpret arrow keys
+    keypad( stdscr, TRUE ); // Let ncurses interpret arrow keys
 
     try
     {
@@ -24,7 +24,12 @@ int main ()
         std::cerr << "Oops, an Error occurred: " << e.what() << std::endl;
         return 1;
     }
-
+    catch ( ... )
+    {
+        endwin();
+        std::cerr << "Oops, an unknown Error occurred!" << std::endl;
+        return 2;
+    }
 
     endwin();   // end ncurses
 
