@@ -17,6 +17,7 @@ Game::Game ( Board* b )
     , dim ( b->get_dim() )
     , shipSizes { 5, 4, 3, 2, 2, 1, 1 }        // each value corresponds to one ship
 {
+    // initialize shipsBoard to 0
     shipsBoard = vector<vector<int>> ( dim.second );
     for ( int row = 0; row < shipsBoard.size(); ++row ) {
         shipsBoard[row] = vector<int> ( dim.first );
@@ -30,15 +31,19 @@ Game::Game ( Board* b )
     srand( time( NULL ) );
 }
 
+
 void Game::run ()
 {
     int ch;
 
+    // randomize ships positions
     randomize();
 
+    // draw board for the first time
     mBoard->draw();
     refresh();
 
+    // main game loop
     while ( ( ch = getch() ) != KEY_F(2) )
     {
         switch ( ch )
@@ -46,8 +51,10 @@ void Game::run ()
             case MY_KEY_ENTER:
             {
                 pair<int, int> currentPos = mBoard->get_cursor_pos();
+                // set position on board accordingly
                 mBoard->set_field( currentPos, shoot( currentPos ));
                 update_score();
+                // redraw board
                 mBoard->draw();
                 refresh();
                 break;
@@ -56,11 +63,14 @@ void Game::run ()
                 show_debug();
                 break;
             default:
+                // move cursor
                 mBoard->user_move_cursor( ch );
         }
 
         if ( has_user_won() )
         {
+            // show confirmation for player
+            // TODO: real success-screen
             cout << "You have won!" << endl;
             getch();
             break;
@@ -68,16 +78,17 @@ void Game::run ()
     }
 }
 
-
+/**
+ * Not implemented yet!
+ */
 void Game::update_score ()
 {
-    // use auto here since we do not know the exact type of board
-    auto board = mBoard->get_board();
-
 
 }
 
-
+/**
+ * simple implemention: just check if there are ships left alive
+ */
 bool Game::has_user_won ()
 {
     if ( mBoard->is_board_full() && ships.size() != 0 )
@@ -92,12 +103,21 @@ bool Game::has_user_won ()
     return true;
 }
 
-
+/**
+ * This function follows this pattern:
+ * 1) choose a random position on the board (startPos)
+ * 2) check if ship can be placed there (using check_placement())
+ *      A) if not: move one field to the right (or down if at end of row)
+ *      - goto 2) -
+ *      B) otherwise set ships positions and add to ships
+ * 4) repeat at 1) for all ships in shipSizes
+ * done
+ */
 bool Game::randomize ()
 {
     ships.clear();
 
-    // randomize ship positions
+    // see step 4)
     for ( int size : shipSizes )
     {
         int tries ( 0 );
@@ -106,26 +126,27 @@ bool Game::randomize ()
 
         Ship* newShip = new Ship ();
 
-        // this vector will hold all ship positions
+        // this vector will hold all positions for newShip
         vector<pair<int,int>> newPos;
 
-        // random starting position (+1 because rand()%dim. lies between 0 and dim.-1)
+        // random starting position - see step 1)
+        // (+1 because rand()%dim.x lies between 0 and dim.x-1)
         pair<int,int> startPos { rand() % dim.first + 1, rand() % dim.second + 1 };
         pair<int,int> testPos = startPos;
 
         while ( ! shipPlaced )
         {
+            // throw an Error if we could be in an endless loop
             if ( testPos == startPos && tries != 0 )
             {
-                throw Error ( "Was not able to set ship " + to_string(size) + ", got back to startPos in Game::randomize!" );
+                throw Error ( "Was not able to set ship with size" + to_string(size)
+                              + ", got back to startPos in Game::randomize!" );
             }
 
-            cout << "trying (" << testPos.first << "," << testPos.second << ")" << endl;
-            //sleep( 1);
-
-            // now lets check every tile which belongs to the ship
+            // see step 2)
             newPos = check_placement( testPos, size );
 
+            // move one pos - see 2.A)
             if ( testPos.first == dim.first )
             {
                 testPos.first = 1;
@@ -136,17 +157,15 @@ bool Game::randomize ()
                 testPos.first++;
             }
 
-            shipPlaced = newPos.size() == size;
+            // were we successful placing ship?
+            shipPlaced = ( newPos.size() == size );
             tries++;
         }
 
+        // see step 2.B)
         newShip->set_pos( newPos );
         ships.push_back( newShip );
     } // end randomize
-
-    // for now, TODO: really randomize pos
-    //ships[0]->set_pos( { make_pair( 1,1 ), make_pair( 1,2 ) } ); // size 2 ship
-    //ships[1]->set_pos( { make_pair( 3,1 ), make_pair( 3,2 ), make_pair( 3,3 ) } );
 
     // add ships to shipsBoard for easier access
     for ( auto s = ships.begin(); s != ships.end(); ++s )
@@ -164,6 +183,9 @@ bool Game::randomize ()
 
 //// PRIVATE METHODS ////
 
+/**
+ * check if at position pos is a ship
+ */
 std::string Game::shoot ( const std::pair<int, int> pos ) const
 {
     int id = shipsBoard[pos.second - 1][pos.first - 1];
@@ -171,21 +193,26 @@ std::string Game::shoot ( const std::pair<int, int> pos ) const
     {
         case 0:
             return "FAIL";
-            break;
         default:
             // the number corresponds to the index + 1 in ships
             ships[id - 1]->hit( pos );
             return "SUCCESS";
-            break;
     }
 }
 
+/**
+ *
+ */
 vector<pair<int,int>> Game::check_placement ( pair<int, int> startPos, int size ) const
 {
     // TODO: not all ships should be vertical
     vector<pair<int,int>> newPos;
-    for ( int vertical = 0; vertical < 2; ++vertical )
+    for ( int i = 0; i < 2; ++i )
     {
+        // if its the first round, vertical should be set randomly
+        // otherwise set vertical to the opposite
+        bool vertical = ( i == 0 ) ? rand() % 2 : ! vertical;
+
         newPos.clear();
         for ( int j = 0; j < size; ++j )
         {
@@ -193,22 +220,16 @@ vector<pair<int,int>> Game::check_placement ( pair<int, int> startPos, int size 
             pair<int, int> pos;
 
             // we always go left or up
-            if ( vertical == 1 )
+            if ( vertical )
             {
                 pos = make_pair( startPos.first, startPos.second - j );
-                if ( ! check_position( pos ) )
-                {
-                    break;
-                }
             }
             else
             {
                 pos = make_pair( startPos.first - j, startPos.second );
-                if ( ! check_position( pos ) )
-                {
-                    break;
-                }
             }
+            if ( ! check_position( pos ) ) { break; }
+
             newPos.push_back( pos );
         }
     }
@@ -217,7 +238,8 @@ vector<pair<int,int>> Game::check_placement ( pair<int, int> startPos, int size 
 }
 
 /**
- * @brief checks placement of ship
+ * Here we loop through all existing ships and check if one of their position
+ * lies too close or on the given position.
  */
 bool Game::check_position ( std::pair<int, int> pos ) const
 {
@@ -228,21 +250,22 @@ bool Game::check_position ( std::pair<int, int> pos ) const
         return false;
     }
 
-    // ok, that was easy, now on to the hard part
+    // loop through all ships
     for ( auto s : ships )
     {
+        // now loop through all positions of that ship
         for ( auto p : s->get_pos() )
         {
             // TODO: make this nicer
-            if ( ( pos.first      == p.first && pos.second      == p.second )
-              || ( pos.first  + 1 == p.first && pos.second  + 1 == p.second )
-              || ( pos.first  - 1 == p.first && pos.second  - 1 == p.second )
-              || ( pos.first  + 1 == p.first && pos.second  - 1 == p.second )
-              || ( pos.first  - 1 == p.first && pos.second  + 1 == p.second )
-              || ( pos.first  + 1 == p.first && pos.second      == p.second )
-              || ( pos.first      == p.first && pos.second  + 1 == p.second )
-              || ( pos.first  - 1 == p.first && pos.second      == p.second )
-              || ( pos.first      == p.first && pos.second  - 1 == p.second ))
+            if ( ( pos.first     == p.first && pos.second     == p.second )
+              || ( pos.first + 1 == p.first && pos.second + 1 == p.second )
+              || ( pos.first - 1 == p.first && pos.second - 1 == p.second )
+              || ( pos.first + 1 == p.first && pos.second - 1 == p.second )
+              || ( pos.first - 1 == p.first && pos.second + 1 == p.second )
+              || ( pos.first + 1 == p.first && pos.second     == p.second )
+              || ( pos.first     == p.first && pos.second + 1 == p.second )
+              || ( pos.first - 1 == p.first && pos.second     == p.second )
+              || ( pos.first     == p.first && pos.second - 1 == p.second ) )
             {
                 return false;
             }
@@ -251,6 +274,9 @@ bool Game::check_position ( std::pair<int, int> pos ) const
     return true;
 }
 
+/**
+ * Shows user a new board only consisting of the ships positions
+ */
 void Game::show_debug () const
 {
     Board debug = *mBoard;
