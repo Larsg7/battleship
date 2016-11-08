@@ -31,7 +31,9 @@ Game::Game ( Board* b )
     srand( time( NULL ) );
 }
 
-
+/**
+ * Main game loop
+ */
 void Game::run ()
 {
     int ch;

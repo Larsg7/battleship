@@ -8,6 +8,7 @@
 /**
  * class which is responsible for drawing the board and keeping
  * track of the cursor position
+ * @author Lars Gröber
  */
 class Board
 {

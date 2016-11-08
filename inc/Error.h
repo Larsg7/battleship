@@ -1,12 +1,11 @@
-//
-// Created by lars on 05/11/16.
-//
-
 #ifndef BATTLESHIP_ERROR_H
 #define BATTLESHIP_ERROR_H
 
 #include <stdexcept>
 
+/**
+ * Short class to report errors
+ */
 class Error : public std::runtime_error
 {
 public:
