@@ -4,7 +4,6 @@
 
 #include "../inc/Game.h"
 #include "../inc/Error.h"
-#include "../inc/Ship.h"
 
 #define MY_KEY_ENTER 10     // for some reason KEY_ENTER does not work
 
@@ -27,7 +26,7 @@ Game::Game ( Board* b )
         }
     }
 
-    int maxShips = shipSizes.size();
+    int maxShips = (int)shipSizes.size();
     mBoard->set_score( 0, maxShips );
 
     // seed random number generator
@@ -74,8 +73,7 @@ void Game::run ()
         if ( has_user_won() )
         {
             // show confirmation for player
-            // TODO: real success-screen
-            cout << "You have won!" << endl;
+            mBoard->print_message( "  You have won!  " );
             getch();
             break;
         }
@@ -188,7 +186,7 @@ std::string Game::shoot ( const std::pair<int, int> pos ) const
     switch ( id )
     {
         case 0:
-            mBoard->print_message( "You missed!     " );
+            mBoard->print_message( "You missed!     " ); // quick fix to overwrite old message
             return "FAIL";
         default:
             // the number corresponds to the index + 1 in ships
@@ -199,7 +197,7 @@ std::string Game::shoot ( const std::pair<int, int> pos ) const
                 if ( ships[id - 1]->is_dead() )
                 {
                     mBoard->print_message( "You sunk a ship!" );
-                    mBoard->reduce_score();
+                    mBoard->advance_score();
                 }
                 else
                 {
@@ -211,15 +209,15 @@ std::string Game::shoot ( const std::pair<int, int> pos ) const
 }
 
 /**
- *
+ * Check if a ship of size *size* can be placed at position *startPos*
  */
 vector<pair<int,int>> Game::check_placement ( pair<int, int> startPos, int size ) const
 {
-    // TODO: not all ships should be vertical
     vector<pair<int,int>> newPos;
+    // 2 rounds for vertical and horizontal placement
     for ( int i = 0; i < 2; ++i )
     {
-        // if its the first round, vertical should be set randomly
+        // if it's the first round, vertical should be set randomly
         // otherwise set vertical to the opposite
         bool vertical = ( i == 0 ) ? rand() % 2 : ! vertical;
 
@@ -244,6 +242,7 @@ vector<pair<int,int>> Game::check_placement ( pair<int, int> startPos, int size 
         }
     }
 
+    // if ship can be placed return new positions, otherwise return empty vector
     return ( newPos.size() == size ) ? newPos : vector<pair<int,int>> ( 0 );
 }
 
@@ -266,7 +265,7 @@ bool Game::check_position ( std::pair<int, int> pos ) const
         // now loop through all positions of that ship
         for ( auto p : s->get_pos() )
         {
-            // TODO: make this nicer
+            // not nice, but it works
             if ( ( pos.first     == p.first && pos.second     == p.second )
               || ( pos.first + 1 == p.first && pos.second + 1 == p.second )
               || ( pos.first - 1 == p.first && pos.second - 1 == p.second )

@@ -23,7 +23,7 @@ bool Ship::is_dead () const
 void Ship::hit ( std::pair<int,int> pos )
 {
     // check if we find pos in damage
-    // -> ship cannot be hit twice at same pos
+    // -> ship cannot be hit twice at same position
     for ( auto p : damage )
     {
         if ( p == pos )

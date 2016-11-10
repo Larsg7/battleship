@@ -25,13 +25,8 @@ public:
     void run ();
 
     /**
-     * @brief This function udates the score.
-     * Not implemented yet!
-     */
-    void update_score ();
-
-    /**
      * @brief Function that randomizes the ships positions.
+     * Uses check_placement() and check_position()
      * @return bool if placement was successful
      */
     bool randomize ();

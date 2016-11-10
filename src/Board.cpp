@@ -1,7 +1,3 @@
-//
-// Created by lars on 11/4/16.
-//
-
 #include <sstream>
 #include <iostream>
 
@@ -51,7 +47,6 @@ void Board::draw () const
     update();
 
     // draw the first line with numbers
-    // TODO: after 10 we need less space between numbers
     vector<string> firstLine ( dim.first + 1 );
     firstLine[0] = " ";
     for ( int i = 1; i < firstLine.size(); ++i ) {
@@ -60,53 +55,101 @@ void Board::draw () const
     mvprintw( bStartGlobal.second, bStartGlobal.first
             , "%s", vector_to_string(firstLine, fieldSeparate).c_str() );
 
-    // draw the board onto the window
+    // draw the board onto the window with the first character in each row being a letter
     for ( unsigned int row = 0; row < board.size(); ++row ) {
         mvprintw ( bStartGlobal.second + vSpace * row + 1, bStartGlobal.first
                  , "%c%s", (const char)( 'A' + row ), fieldSeparate.c_str() );
         printw ( "%s", vector_to_string( board[row], fieldSeparate ).c_str() );
     }
 
-
     // add score and message
     mvprintw( bStartGlobal.second + vSpace * board.size() + 2, bStartGlobal.first
-            , "%i/%i sunk\t%s", score.first, score.second, message.c_str() );
+            , "%i/%i sunk | %s", score.first, score.second, message.c_str() );
 
     reset_cursor();
 }
 
+/**
+ * loop through board and check if you find a field which is still free
+ */
+bool Board::is_board_full ()
+{
+    for ( int row = 0; row < board.size(); ++row ) {
+        for ( int col = 0; col < board[row].size(); ++col ) {
+            if ( board[row][col] == fieldFree )
+                return false;
+        }
+    }
+    return true;
+}
+
+bool Board::user_move_cursor ( const int key ) const
+{
+    pair<int,int> newPos = posCursor;
+    // change newPos according to Key
+    switch ( key )
+    {
+        case KEY_RIGHT:
+            newPos.first++;
+            break;
+        case KEY_LEFT:
+            newPos.first--;
+            break;
+        case KEY_DOWN:
+            newPos.second++;
+            break;
+        case KEY_UP:
+            newPos.second--;
+            break;
+        default:
+            break;
+    }
+
+    // move cursor
+    return move_local( newPos );
+}
+
+void Board::reset_cursor () const
+{
+    // move the cursor to starting position
+    move_local( posCursor );
+}
 
 void Board::print_message ( const std::string& msg )
 {
     message = msg;
     draw();
     refresh();
-    message = "";
 }
+
+void Board::advance_score ()
+{
+    score.first++;
+}
+
+//// SETTERS ////
 
 void Board::set_score ( int shipsLeft, int shipsTotal )
 {
     score = make_pair( shipsLeft, shipsTotal );
 }
 
-void Board::reduce_score ()
-{
-    score.first++;
-}
-
 bool Board::set_field ( const std::pair<int, int> pos, const std::string& type )
 {
+    // is pos on the board?
     if ( pos.first  < 1 || pos.first  > dim.first
       || pos.second < 1 || pos.second > dim.second )
     {
         throw Error ( "Position is not on board in Board::set_field!" );
     }
 
+    // is the field still free?
     if ( board[pos.second - 1][pos.first - 1] != fieldFree )
     {
         return false;
     }
 
+    // otherwise replace the field
     string replace;
     if ( type == "FAIL" )
     {
@@ -129,6 +172,7 @@ void Board::set_board ( std::vector<std::vector<std::string>>& b )
     board = b;
 }
 
+//// Getters ////
 
 std::pair<int,int> Board::get_cursor_pos () const
 {
@@ -149,56 +193,12 @@ WINDOW* Board::get_window () const {
     return window;
 }
 
-/**
- * loop through board and check if you find a field which is still free
- */
-bool Board::is_board_full ()
-{
-    for ( int row = 0; row < board.size(); ++row ) {
-        for ( int col = 0; col < board[row].size(); ++col ) {
-            if ( board[row][col] == fieldFree )
-                return false;
-        }
-    }
-    return true;
-}
-
-
-void Board::reset_cursor () const
-{
-    // move the cursor to starting position
-    move_local( posCursor );
-}
-
-
-bool Board::user_move_cursor ( const int key ) const
-{
-    pair<int,int> newPos = posCursor;
-    switch ( key )
-    {
-        case KEY_RIGHT:
-            newPos.first++;
-            break;
-        case KEY_LEFT:
-            newPos.first--;
-            break;
-        case KEY_DOWN:
-            newPos.second++;
-            break;
-        case KEY_UP:
-            newPos.second--;
-            break;
-        default:
-            // throw an error?
-            break;
-    }
-
-    // move cursor
-    return move_local( newPos );
-}
-
 //// PRIVATE METHODS ////
 
+/**
+ * This function is very important as it translates from global coordinates of the terminal
+ * to local coordinated of the board
+ */
 bool Board::move_local ( std::pair<int, int> pos ) const
 {
     // check if position is on the board
@@ -209,6 +209,7 @@ bool Board::move_local ( std::pair<int, int> pos ) const
     }
     else
     {
+        // otherwise move the cursor to a position on the board in local coordinates
         int sepLength = (int)fieldSeparate.length();
         move( pos.second + bStartGlobal.second
             , bStartGlobal.first + pos.first * ( sepLength + 1 ) );

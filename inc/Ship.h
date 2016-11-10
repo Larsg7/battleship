@@ -6,7 +6,7 @@
 
 /**
  * @brief Class responsible for holding all information about one ship
- * @author Lars Gröber
+ * @author Lars Groeber
  */
 class Ship
 {

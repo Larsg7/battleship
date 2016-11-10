@@ -1,3 +1,17 @@
+/**
+ * Battleship game - solution to problem 3 of sheet 4
+ *
+ * to complile:
+ * cd build
+ * cmake .. && make
+ *
+ * or
+ *
+ * g++ src/*.cpp inc/*.h -lncurses -std=c++11
+ *
+ * Controls:
+ */
+
 #include <ncurses.h>
 #include <iostream>
 
@@ -15,8 +29,8 @@ int main ()
     try
     {
         Board* b = new Board ( 10, 10, stdscr );
-        Game g ( b );
-        g.run();
+        Game* g = new Game ( b );
+        g->run();
     }
     catch ( const Error& e )
     {

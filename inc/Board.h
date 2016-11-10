@@ -6,7 +6,7 @@
 #include <string>
 
 /**
- * class which is responsible for drawing the board and keeping
+ * Class which is responsible for drawing the board and keeping
  * track of the cursor position
  * @author Lars Gröber
  */
@@ -44,7 +44,16 @@ public:
     */
     void reset_cursor () const;
 
+    /**
+     * @brief Function to print a message beneath the board
+     * @param msg the message
+     */
     void print_message ( const std::string& msg );
+
+    /**
+     * @brief Function to advance the score by one
+     */
+    void advance_score ();
 
     //// SETTERS ////
 
@@ -56,11 +65,18 @@ public:
      */
     bool set_field ( const std::pair<int,int> pos, const std::string& type );
 
+    /**
+     * @brief Function to set the board to a new one
+     * @param b the new board (correct type is important here)
+     */
     void set_board ( std::vector<std::vector<std::string>>& b );
 
+    /**
+     * @brief Function to set the initial score
+     * @param shipsLeft the amount of ships left (usally 0)
+     * @param shipsTotal the total amount of ships
+     */
     void set_score ( int shipsLeft, int shipsTotal );
-
-    void reduce_score ();
 
     //// GETTERS ////
 
@@ -82,6 +98,10 @@ public:
      */
     std::pair<int,int> get_dim () const;
 
+    /**
+     * @brief Function which returns the Boards window
+     * @return window
+     */
     WINDOW* get_window () const;
 
 private:
