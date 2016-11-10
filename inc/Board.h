@@ -44,6 +44,8 @@ public:
     */
     void reset_cursor () const;
 
+    void print_message ( const std::string& msg );
+
     //// SETTERS ////
 
     /**
@@ -55,6 +57,10 @@ public:
     bool set_field ( const std::pair<int,int> pos, const std::string& type );
 
     void set_board ( std::vector<std::vector<std::string>>& b );
+
+    void set_score ( int shipsLeft, int shipsTotal );
+
+    void reduce_score ();
 
     //// GETTERS ////
 
@@ -96,6 +102,10 @@ private:
     std::string fieldFail;
     std::string fieldSuccess;
     unsigned int vSpace;
+
+    /** message and score */
+    std::string message;
+    std::pair<int,int> score;
 
     /** starting position of the cursor in local coords (x,y) */
     const std::pair<int,int> posCursorStart;

@@ -27,6 +27,9 @@ Game::Game ( Board* b )
         }
     }
 
+    int maxShips = shipSizes.size();
+    mBoard->set_score( 0, maxShips );
+
     // seed random number generator
     srand( time( NULL ) );
 }
@@ -55,7 +58,6 @@ void Game::run ()
                 pair<int, int> currentPos = mBoard->get_cursor_pos();
                 // set position on board accordingly
                 mBoard->set_field( currentPos, shoot( currentPos ));
-                update_score();
                 // redraw board
                 mBoard->draw();
                 refresh();
@@ -78,14 +80,6 @@ void Game::run ()
             break;
         }
     }
-}
-
-/**
- * Not implemented yet!
- */
-void Game::update_score ()
-{
-
 }
 
 /**
@@ -194,10 +188,24 @@ std::string Game::shoot ( const std::pair<int, int> pos ) const
     switch ( id )
     {
         case 0:
+            mBoard->print_message( "You missed!     " );
             return "FAIL";
         default:
             // the number corresponds to the index + 1 in ships
-            ships[id - 1]->hit( pos );
+            if ( ! ships[id - 1]->is_dead() )
+            {
+                ships[id - 1]->hit( pos );
+
+                if ( ships[id - 1]->is_dead() )
+                {
+                    mBoard->print_message( "You sunk a ship!" );
+                    mBoard->reduce_score();
+                }
+                else
+                {
+                    mBoard->print_message( "You hit a ship! " );
+                }
+            }
             return "SUCCESS";
     }
 }

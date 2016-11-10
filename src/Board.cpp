@@ -67,9 +67,32 @@ void Board::draw () const
         printw ( "%s", vector_to_string( board[row], fieldSeparate ).c_str() );
     }
 
+
+    // add score and message
+    mvprintw( bStartGlobal.second + vSpace * board.size() + 2, bStartGlobal.first
+            , "%i/%i sunk\t%s", score.first, score.second, message.c_str() );
+
     reset_cursor();
 }
 
+
+void Board::print_message ( const std::string& msg )
+{
+    message = msg;
+    draw();
+    refresh();
+    message = "";
+}
+
+void Board::set_score ( int shipsLeft, int shipsTotal )
+{
+    score = make_pair( shipsLeft, shipsTotal );
+}
+
+void Board::reduce_score ()
+{
+    score.first++;
+}
 
 bool Board::set_field ( const std::pair<int, int> pos, const std::string& type )
 {
